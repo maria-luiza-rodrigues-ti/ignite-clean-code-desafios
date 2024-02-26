@@ -1,55 +1,64 @@
 // Nomenclatura de variáveis
 
-const list = [
+const listOfUsersCategories = [
   {
-    title: 'User',
-    followers: 5
+    title: "User",
+    followers: 5,
   },
   {
-    title: 'Friendly',
+    title: "Friendly",
     followers: 50,
   },
   {
-    title: 'Famous',
+    title: "Famous",
     followers: 500,
   },
   {
-    title: 'Super Star',
+    title: "Super Star",
     followers: 1000,
   },
-]
+];
 
 export default async function getData(req, res) {
-  const github = String(req.query.username)
+  const githubUser = String(req.query.username);
 
-  if (!github) {
+  if (!githubUser) {
     return res.status(400).json({
-      message: `Please provide an username to search on the github API`
-    })
+      message: `Please provide an username to search on the github API`,
+    });
   }
 
-  const response = await fetch(`https://api.github.com/users/${github}`);
+  const response = await fetch(`https://api.github.com/users/${githubUser}`);
 
   if (response.status === 404) {
     return res.status(400).json({
-      message: `User with username "${github}" not found`
-    })
+      message: `User with username "${githubUser}" not found`,
+    });
   }
 
-  const data = await response.json()
+  const userSearched = await response.json();
 
-  const orderList = list.sort((a, b) =>  b.followers - a.followers); 
+  const orderedUserCategoryList = listOfUsersCategories.sort(
+    (a, b) => b.followers - a.followers
+  );
 
-  const category = orderList.find(i => data.followers > i.followers)
+  const firstCategoryFind = orderedUserCategoryList.find(
+    (category) => userSearched.followers > category.followers
+  );
 
   const result = {
-    github,
-    category: category.title
-  }
+    githubUser,
+    category: firstCategoryFind.title,
+  };
 
-  return result
+  return result;
 }
 
-getData({ query: {
-  username: 'josepholiveira'
-}}, {})
+getData(
+  {
+    query: {
+      username: "josepholiveira",
+    },
+  },
+  {}
+);
